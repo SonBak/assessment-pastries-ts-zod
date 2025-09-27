@@ -1,55 +1,83 @@
 import express from "express";
+import { z } from "zod";
 
 const app = express();
 
 app.use(express.json());
 
-const PORT = 3000;
+const PORT: number = 3000;
 
-app.listen(PORT, () => {
+app.listen(PORT, (): void => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-let books = [
+// Define the Pastry type
+interface Pastry {
+  id: number;
+  name: string;
+  price: number;
+}
+
+let pastries: Pastry[] = [
   {
     id: 1,
-    title: "1984",
-    author: "George Orwell",
+    name: "Kanelbulle",
+    price: 35,
   },
   {
     id: 2,
-    title: "The Hobbit",
-    author: "J.R.R. Tolkien",
+    name: "Semla",
+    price: 40,
   },
 ];
 
-app.get("/books", (req, res) => {
-  res.json(books);
+const pastrySchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(2).max(20),
+  price: z.number().min(1).max(100),
 });
 
-app.post("/books", (req, res) => {
-  const newBook = {
-    id: books.length + 1,
-    title: req.body.title,
-    author: req.body.author,
-  };
-  books.push(newBook);
-  res.json({ message: "Book added successfully", book: newBook });
+const validatePastry = pastrySchema.safeParse(pastries);
+if (!validatePastry.success) {
+  console.error("Pastry schema validation failed:", validatePastry.error);
+} else {
+  console.log(validatePastry.data);
+}
+
+app.get("/pastries", (req, res): void => {
+  res.json(pastries);
 });
 
-app.put("/books/:id", (req, res) => {
-  const bookId = parseInt(req.params.id);
-  const book = books.find((b) => b.id === bookId);
-  if (!book) {
-    return res.status(404).json({ message: "Book not found!" });
+app.post("/pastries", (req, res): any => {
+  const result = pastrySchema.safeParse({
+    ...req.body,
+    id: pastries.length + 1,
+  });
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.issues });
   }
-  book.title = req.body.title || book.title;
-  book.author = req.body.author || book.author;
-  res.json({ message: "Book updated successfully", book });
+  const newPastry: Pastry = result.data;
+  pastries.push(newPastry);
+  res.json({ message: "Pastry added successfully", pastry: newPastry });
 });
 
-app.delete("/books/:id", (req, res) => {
-  const bookId = parseInt(req.params.id);
-  books = books.filter((b) => b.id !== bookId);
-  res.json({ message: "Book deleted successfully!" });
+app.put("/pastries/:id", (req, res) => {
+  const pastryId: number = parseInt(req.params.id);
+  const pastry = pastries.find((p) => p.id === pastryId);
+  if (!pastry) {
+    return res.status(404).json({ message: "Pastry not found!" });
+  }
+  const result = pastrySchema.safeParse({ ...req.body, id: pastryId });
+  if (!result.success) {
+    return res.status(400).json({ error: result.error.issues });
+  }
+  pastry.name = result.data.name;
+  pastry.price = result.data.price;
+  res.json({ message: "Pastry updated successfully", pastry });
+});
+
+app.delete("/pastries/:id", (req, res): void => {
+  const pastryId: number = parseInt(req.params.id);
+  pastries = pastries.filter((p: Pastry) => p.id !== pastryId);
+  res.json({ message: "Pastry deleted successfully!" });
 });
