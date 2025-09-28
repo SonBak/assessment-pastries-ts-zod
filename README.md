@@ -12,7 +12,8 @@ The project is written in TypeScript and imports Express for the web application
 
 Make sure that NPM, TypeScript, Express, Zod, Nodemon and ts-node are installed.
 
-```npm init -y
+```
+npm init -y
 npm install -D typescript ts-node @types/node
 npm install express
 npm install zod
