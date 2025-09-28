@@ -1,23 +1,27 @@
+// Import express and zod
 import express from "express";
 import { z } from "zod";
 
+// Initialize express app and set port
 const app = express();
-
-app.use(express.json());
-
 const PORT: number = 3000;
 
+// Middleware to parse JSON
+app.use(express.json());
+
+// Start the server
 app.listen(PORT, (): void => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-// Define the Pastry type
+// TS interface for Pastry type
 interface Pastry {
   id: number;
   name: string;
   price: number;
 }
 
+// Array to store pastries
 let pastries: Pastry[] = [
   {
     id: 1,
@@ -31,23 +35,32 @@ let pastries: Pastry[] = [
   },
 ];
 
+// Zod schema for validating a single pastry
 const pastrySchema = z.object({
-  id: z.number().int().positive(),
-  name: z.string().min(2).max(20),
-  price: z.number().min(1).max(100),
+  id: z.number().int().positive(), // ID must be a positive integer
+  name: z.string().min(5).max(20), // Name must be between 5 and 20 characters
+  price: z.number().min(10).max(100), // Price must be between 10 and 100
 });
 
-const validatePastry = pastrySchema.safeParse(pastries);
+// Zod schema for validating the whole array of pastries
+const pastriesSchema = z.array(pastrySchema);
+
+// Validate pastries array
+const validatePastry = pastriesSchema.safeParse(pastries);
 if (!validatePastry.success) {
   console.error("Pastry schema validation failed:", validatePastry.error);
 } else {
   console.log(validatePastry.data);
 }
 
+// CRUD Endpoints for pastries
+
+// Get all pastries
 app.get("/pastries", (req, res): void => {
   res.json(pastries);
 });
 
+// Add a new pastry with validation that gets the next available ID
 app.post("/pastries", (req, res): any => {
   const result = pastrySchema.safeParse({
     ...req.body,
@@ -61,6 +74,7 @@ app.post("/pastries", (req, res): any => {
   res.json({ message: "Pastry added successfully", pastry: newPastry });
 });
 
+// Update a pastry by ID with validation
 app.put("/pastries/:id", (req, res) => {
   const pastryId: number = parseInt(req.params.id);
   const pastry = pastries.find((p) => p.id === pastryId);
@@ -76,6 +90,7 @@ app.put("/pastries/:id", (req, res) => {
   res.json({ message: "Pastry updated successfully", pastry });
 });
 
+// Delete a pastry by ID
 app.delete("/pastries/:id", (req, res): void => {
   const pastryId: number = parseInt(req.params.id);
   pastries = pastries.filter((p: Pastry) => p.id !== pastryId);
