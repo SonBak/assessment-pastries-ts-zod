@@ -22,7 +22,7 @@ npm install -D nodemon
 
 ### Run the server:
 
-Then you can run the project on your http//:localhost:3000 using `npm run dev`. This can be visualized in Insomnia and to add http requests to view, add, change and deleted data.
+Then you can run the project on your http//:localhost:3000 using `npm run dev`. This can be visualized in [Insomnia](https://insomnia.rest/download) and to add http requests to view, add, change and deleted data.
 
 ### Pastry data:
 
