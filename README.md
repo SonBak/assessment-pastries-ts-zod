@@ -46,7 +46,7 @@ let pastries: Pastry[] = [
 ### Zod schema validation:
 
 `pastrySchema` validates the structure of a pastry object, while `pastriesSchema` validates the whole array of pastries.
-Below is the current validation schema that validates that the `id` must be a positive integer, the `name` is a string from 5 to 20 characters and the `price`is a number from 10 to 100. These can be changed to adjust the validation of the project.
+Below is the current validation schema that validates that the `id` must be a positive integer, the `name` is a string from 5 to 20 characters and the `price` is a number from 10 to 100. These can be changed to adjust the validation of the project.
 
 ```
 const pastrySchema = z.object({
