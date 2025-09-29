@@ -53,7 +53,7 @@ if (!validatePastry.success) {
   console.log(validatePastry.data);
 }
 
-// CRUD Endpoints for pastries
+// CRUD for pastries
 
 // Get all pastries
 app.get("/pastries", (req, res): void => {
@@ -71,7 +71,7 @@ app.post("/pastries", (req, res): any => {
   }
   const newPastry: Pastry = result.data;
   pastries.push(newPastry);
-  res.json({ message: "Pastry added successfully", pastry: newPastry });
+  res.json({ message: "Pastry added successfully!", pastry: newPastry });
 });
 
 // Update a pastry by ID with validation
@@ -87,7 +87,7 @@ app.put("/pastries/:id", (req, res) => {
   }
   pastry.name = result.data.name;
   pastry.price = result.data.price;
-  res.json({ message: "Pastry updated successfully", pastry });
+  res.json({ message: "Pastry updated successfully!", pastry });
 });
 
 // Delete a pastry by ID
